@@ -21,58 +21,69 @@ public_users.post("/register", (req,res) => {
   return res.status(404).json({message: "Unable to register user."});
 });
 
-// Get the book list available in the shop
+// Internal data endpoint to serve the 4 async routes without loop
+public_users.get('/internal/books', (req, res) => {
+    res.status(200).json(books);
+});
+
+// Function 1: Get all books using async/await with Axios
 public_users.get('/', async function (req, res) {
   try {
-    const bookList = books;
-    res.status(200).send(JSON.stringify(bookList, null, 4));
+     const response = await axios.get('http://localhost:5000/internal/books');  
+     return res.status(200).send(JSON.stringify(response.data, null, 4));
   } catch (error) {
-    res.status(500).json({message: "Error fetching book list"});
+     return res.status(500).json({message: "Error fetching books list"});
   }
 });
 
-// Get book details based on ISBN
+// Internal ISBN API
+public_users.get('/internal/isbn/:isbn', (req, res) => {
+    const book = books[req.params.isbn];
+    if(book) res.json(book); else res.status(404).json({message:"Not found"});
+});
+
+// Function 2: Get book details by ISBN using async/await with Axios
 public_users.get('/isbn/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
   try {
-    const book = books[isbn];
-    if (book) {
-      res.status(200).json(book);
-    } else {
-      res.status(404).json({message: "Book not found"});
-    }
+     const response = await axios.get(`http://localhost:5000/internal/isbn/${isbn}`);
+     return res.status(200).json(response.data);
   } catch (error) {
-    res.status(500).json({message: "Error fetching book details"});
+     return res.status(500).json({message: "Error fetching book by ISBN"});
   }
  });
   
-// Get book details based on author
+// Internal Author API
+public_users.get('/internal/author/:author', (req, res) => {
+    const bks = Object.values(books).filter(b => b.author === req.params.author);
+    res.json(bks);
+});
+
+// Function 3: Get books by Author using async/await with Axios
 public_users.get('/author/:author', async function (req, res) {
   const author = req.params.author;
   try {
-    const booksByAuthor = Object.values(books).filter(book => book.author === author);
-    if (booksByAuthor.length > 0) {
-      res.status(200).json(booksByAuthor);
-    } else {
-      res.status(404).json({message: "No books found for this author"});
-    }
+    const response = await axios.get(`http://localhost:5000/internal/author/${author}`);
+    return res.status(200).json(response.data);
   } catch (error) {
-    res.status(500).json({message: "Error fetching books by author"});
+    return res.status(500).json({message: "Error fetching books by author"});
   }
 });
 
-// Get all books based on title
+// Internal Title API
+public_users.get('/internal/title/:title', (req, res) => {
+    const bks = Object.values(books).filter(b => b.title === req.params.title);
+    res.json(bks);
+});
+
+// Function 4: Get books by Title using async/await with Axios
 public_users.get('/title/:title', async function (req, res) {
   const title = req.params.title;
   try {
-    const booksByTitle = Object.values(books).filter(book => book.title === title);
-    if (booksByTitle.length > 0) {
-      res.status(200).json(booksByTitle);
-    } else {
-      res.status(404).json({message: "No books found for this title"});
-    }
+    const response = await axios.get(`http://localhost:5000/internal/title/${title}`);
+    return res.status(200).json(response.data);
   } catch (error) {
-    res.status(500).json({message: "Error fetching books by title"});
+    return res.status(500).json({message: "Error fetching books by title"});
   }
 });
 
