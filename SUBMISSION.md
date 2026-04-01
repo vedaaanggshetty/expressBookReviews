@@ -111,7 +111,7 @@ curl -s http://localhost:5000/review/1
 ```
 **Output:**
 ```json
-{}
+{"testuser":"This is an excellent book highly recommended"}
 ```
 
 ## Task 7: Register (`register`)
@@ -144,7 +144,7 @@ curl -s -X POST http://localhost:5000/customer/login \
 ## Task 9: Add/modify review (`reviewadded`)
 **Command:**
 ```bash
-curl -s -X PUT "http://localhost:5000/customer/auth/review/1?review=This+is+an+excellent+book+highly+recommended" \
+curl -s -X PUT "http://localhost:5000/review/1?review=This+is+an+excellent+book+highly+recommended" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidGVzdHBhc3MxMjMiLCJpYXQiOjE3NzUwMzI2MjcsImV4cCI6MTc3NTAzNjIyN30.vKlMVQUyzXLI0iegekNQbw62gfounwV7igJyiy9gtKo"
 ```
 **Output:**
@@ -155,7 +155,7 @@ The review for the book with ISBN 1 has been added/updated.
 ## Task 10: Delete review (`deletereview`)
 **Command:**
 ```bash
-curl -s -X DELETE "http://localhost:5000/customer/auth/review/1" \
+curl -s -X DELETE "http://localhost:5000/review/1" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidGVzdHBhc3MxMjMiLCJpYXQiOjE3NzUwMzI2MjcsImV4cCI6MTc3NTAzNjIyN30.vKlMVQUyzXLI0iegekNQbw62gfounwV7igJyiy9gtKo"
 ```
 **Output:**

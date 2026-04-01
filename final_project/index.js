@@ -8,9 +8,14 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
+app.use(session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
-app.use("/customer/auth/*", function auth(req,res,next){
+app.use(["/customer/auth/*", "/review/:isbn"], function auth(req,res,next){
+    // Apply auth logic ONLY for PUT/DELETE on /review or for any /customer/auth/*
+    if (req.originalUrl.startsWith("/review") && req.method === "GET") {
+        return next();
+    }
+    
     let token = req.session.authorization ? req.session.authorization['accessToken'] : null;
     
     if(!token && req.headers['authorization']) {
@@ -38,8 +43,7 @@ app.use("/customer/auth/*", function auth(req,res,next){
     }
 });
  
-const PORT =5000;
-
+const PORT = 5000;
 app.use("/customer", customer_routes);
 app.use("/", genl_routes);
 

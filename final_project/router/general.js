@@ -98,4 +98,43 @@ public_users.get('/review/:isbn', function (req, res) {
   }
 });
 
+// Authenticated routes for reviews
+public_users.put('/review/:isbn', (req, res) => {
+    // Auth check (simulating logic from index.js)
+    if(!req.session.authorization) {
+        return res.status(403).json({message: "User not logged in"});
+    }
+    const isbn = req.params.isbn;
+    let filtered_book = books[isbn];
+    if (filtered_book) {
+        let review = req.query.review;
+        let reviewer = req.session.authorization['username'];
+        if(review) {
+            filtered_book['reviews'][reviewer] = review;
+            books[isbn] = filtered_book;
+        }
+        return res.status(200).send(`The review for the book with ISBN ${isbn} has been added/updated.`);
+    }
+    else {
+        return res.status(404).json({message: `Book with ISBN ${isbn} not found`});
+    }
+});
+
+public_users.delete('/review/:isbn', (req, res) => {
+    // Auth check
+    if(!req.session.authorization) {
+        return res.status(403).json({message: "User not logged in"});
+    }
+    const isbn = req.params.isbn;
+    let reviewer = req.session.authorization['username'];
+    let filtered_book = books[isbn];
+    if (filtered_book) {
+        delete filtered_book['reviews'][reviewer];
+        return res.status(200).send(`Reviews for the ISBN ${isbn} posted by the user ${reviewer} deleted.`);
+    }
+    else {
+        return res.status(404).json({message: `Book with ISBN ${isbn} not found`});
+    }
+});
+
 module.exports.general = public_users;
