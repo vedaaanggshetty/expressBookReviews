@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidGVzdHBhc3MxMjMiLCJpYXQiOjE3NzUwMzY2OTMsImV4cCI6MTc3NTA0MDI5M30.HSdDOxNIVxEedIuYmtl-tQOA0sJhdvCjF0yIx39puKQ
+Content-Type: text/html; charset=utf-8
+Content-Length: 17
+ETag: W/"11-qm4PNoRA6lWXPrVKxZM3aG7OGxo"
+Set-Cookie: connect.sid=s%3AkHZszQpgN-bI3GgHTo_8WGZiBV4k2wS4.tEKNHhRzg6xG38LifZhTvXgZicvGsTsqNiUvK5EC4NI; Path=/; HttpOnly
+Date: Wed, 01 Apr 2026 09:44:53 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Login successful!
