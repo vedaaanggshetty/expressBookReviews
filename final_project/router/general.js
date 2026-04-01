@@ -21,71 +21,73 @@ public_users.post("/register", (req,res) => {
   return res.status(404).json({message: "Unable to register user."});
 });
 
-// Internal data endpoint to serve the 4 async routes without loop
-public_users.get('/internal/books', (req, res) => {
-    res.status(200).json(books);
+
+
+// Function 1: Get all books using Promise callbacks
+public_users.get('/', function (req, res) {
+  const get_books = new Promise((resolve, reject) => {
+    resolve(books);
+  });
+  get_books.then((bk) => {
+    res.status(200).send(JSON.stringify(bk, null, 4));
+  });
 });
 
-// Function 1: Get all books using async/await with Axios
-public_users.get('/', async function (req, res) {
-  try {
-     const response = await axios.get('http://localhost:5000/internal/books');  
-     return res.status(200).send(JSON.stringify(response.data, null, 4));
-  } catch (error) {
-     return res.status(500).json({message: "Error fetching books list"});
-  }
-});
-
-// Internal ISBN API
-public_users.get('/internal/isbn/:isbn', (req, res) => {
-    const book = books[req.params.isbn];
-    if(book) res.json(book); else res.status(404).json({message:"Not found"});
-});
-
-// Function 2: Get book details by ISBN using async/await with Axios
-public_users.get('/isbn/:isbn', async function (req, res) {
+// Function 2: Get book details by ISBN using Promise callbacks
+public_users.get('/isbn/:isbn', function (req, res) {
   const isbn = req.params.isbn;
-  try {
-     const response = await axios.get(`http://localhost:5000/internal/isbn/${isbn}`);
-     return res.status(200).json(response.data);
-  } catch (error) {
-     return res.status(500).json({message: "Error fetching book by ISBN"});
-  }
- });
+  const get_book = new Promise((resolve, reject) => {
+    if (books[isbn]) {
+      resolve(books[isbn]);
+    } else {
+      reject({status: 404, message: `Book with ISBN ${isbn} not found`});
+    }
+  });
+  get_book.then(
+    (bk) => res.status(200).send(JSON.stringify(bk, null, 4)),
+    (err) => res.status(err.status).json({message: err.message})
+  );
+});
+
+
   
-// Internal Author API
-public_users.get('/internal/author/:author', (req, res) => {
-    const bks = Object.values(books).filter(b => b.author === req.params.author);
-    res.json(bks);
-});
-
-// Function 3: Get books by Author using async/await with Axios
-public_users.get('/author/:author', async function (req, res) {
+// Function 3: Get books by Author using Promise callbacks
+public_users.get('/author/:author', function (req, res) {
   const author = req.params.author;
-  try {
-    const response = await axios.get(`http://localhost:5000/internal/author/${author}`);
-    return res.status(200).json(response.data);
-  } catch (error) {
-    return res.status(500).json({message: "Error fetching books by author"});
-  }
+  const get_books_by_author = new Promise((resolve, reject) => {
+    let filtered_books = Object.values(books).filter(b => b.author === author);
+    if (filtered_books.length > 0) {
+      resolve(filtered_books);
+    } else {
+      reject({status: 404, message: `No books found by author ${author}`});
+    }
+  });
+  get_books_by_author.then(
+    (bks) => res.status(200).send(JSON.stringify(bks, null, 4)),
+    (err) => res.status(err.status).json({message: err.message})
+  );
 });
 
-// Internal Title API
-public_users.get('/internal/title/:title', (req, res) => {
-    const bks = Object.values(books).filter(b => b.title === req.params.title);
-    res.json(bks);
-});
 
-// Function 4: Get books by Title using async/await with Axios
-public_users.get('/title/:title', async function (req, res) {
+
+// Function 4: Get books by Title using Promise callbacks
+public_users.get('/title/:title', function (req, res) {
   const title = req.params.title;
-  try {
-    const response = await axios.get(`http://localhost:5000/internal/title/${title}`);
-    return res.status(200).json(response.data);
-  } catch (error) {
-    return res.status(500).json({message: "Error fetching books by title"});
-  }
+  const get_books_by_title = new Promise((resolve, reject) => {
+    let filtered_books = Object.values(books).filter(b => b.title === title);
+    if (filtered_books.length > 0) {
+      resolve(filtered_books);
+    } else {
+      reject({status: 404, message: `No books found with title ${title}`});
+    }
+  });
+  get_books_by_title.then(
+    (bks) => res.status(200).send(JSON.stringify(bks, null, 4)),
+    (err) => res.status(err.status).json({message: err.message})
+  );
 });
+
+
 
 //  Get book review
 public_users.get('/review/:isbn', function (req, res) {
